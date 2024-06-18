@@ -10,6 +10,7 @@ package com.shuishu.utils.tool.math;
  * <p></p>
  * @Description ：数值操作
  * <p></p>
+ * 参考：
  */
 public class NiceMath {
 }

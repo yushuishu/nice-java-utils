@@ -10,6 +10,7 @@ package com.shuishu.utils.tool.entity;
  * <p></p>
  * @Description ：对象实体操作
  * <p></p>
+ * 参考：
  */
 public class NiceEntity {
 }

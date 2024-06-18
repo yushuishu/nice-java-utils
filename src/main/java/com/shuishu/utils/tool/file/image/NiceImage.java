@@ -10,6 +10,7 @@ package com.shuishu.utils.tool.file.image;
  * <p></p>
  * @Description ：图片操作
  * <p></p>
+ * 参考：
  */
 public class NiceImage {
 

@@ -10,6 +10,7 @@ package com.shuishu.utils.tool.cache.redis;
  * <p></p>
  * @Description ：缓存
  * <p></p>
+ * 参考：
  */
 public class NiceRedis {
 

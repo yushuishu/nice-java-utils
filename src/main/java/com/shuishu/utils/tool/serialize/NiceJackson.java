@@ -10,6 +10,7 @@ package com.shuishu.utils.tool.serialize;
  * <p></p>
  * @Description ： Jackson 封装
  * <p></p>
+ * 参考：
  */
 public class NiceJackson {
 

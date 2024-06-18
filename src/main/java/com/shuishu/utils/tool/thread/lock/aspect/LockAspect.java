@@ -23,9 +23,13 @@ import java.util.concurrent.locks.ReentrantLock;
  * @Motto  ：ABC(Always Be Coding)
  * <p></p>
  * @Description ： 切面拦截，添加并发控制Lock锁
- * @Order 越小越是最先执行，但更重要的是最先执行的最后结束
- * 使用时，要修改的代码：@Pointcut("@annotation(com.shuishu.utils.tool.thread.lock.ServiceLock)") ，换成项目实际路径
+ * <p></p>
+ * 参考：
+ *
+ * 使用：
+ * 要修改的代码：@Pointcut("@annotation(com.shuishu.utils.tool.thread.lock.ServiceLock)") ，换成项目实际路径
  */
+// 越小越是最先执行，但更重要的是最先执行的最后结束
 @Order(1)
 @Component
 @Scope

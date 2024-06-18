@@ -11,6 +11,8 @@ import java.lang.annotation.*;
  * @Motto  ：ABC(Always Be Coding)
  * <p></p>
  * @Description ：使用在控制并发，要加锁的方法上
+ * <p></p>
+ * 参考：
  */
 @Target({ElementType.PARAMETER, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

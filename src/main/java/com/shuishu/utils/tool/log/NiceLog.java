@@ -10,6 +10,7 @@ package com.shuishu.utils.tool.log;
  * <p></p>
  * @Description ：日志，延时刷新到文件，减少cpu压力
  * <p></p>
+ * 参考：
  */
 public class NiceLog {
 

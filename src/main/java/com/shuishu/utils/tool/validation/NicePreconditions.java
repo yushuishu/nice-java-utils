@@ -14,7 +14,8 @@ import javax.annotation.CheckForNull;
  * @Motto ：ABC(Always Be Coding)
  * <p></p>
  * @Description ：条件判断、校验
- * 参考：com.google.guava
+ * <p></p>
+ * 参考：
  */
 public class NicePreconditions {
 

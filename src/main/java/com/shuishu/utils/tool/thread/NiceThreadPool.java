@@ -1,7 +1,7 @@
 package com.shuishu.utils.tool.thread;
 
 
-import com.shuishu.utils.tool.thread.factory.ThreadFactoryBuilder;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,9 +15,11 @@ import java.util.concurrent.*;
  * @Motto  ：ABC(Always Be Coding)
  * <p></p>
  * @Description ：线程池
- *
- * 参考：https://www.cnblogs.com/liangxianning/p/17058248.html
- *      com.google.guava
+ * <p></p>
+ * 参考：
+ * <a href="https://www.cnblogs.com/liangxianning/p/17058248.html">...</a>
+ * <a href="https://wizardforcel.gitbooks.io/guava-tutorial/content/index.html">...</a>
+ * <a href="https://github.com/google/guava">...</a>
  */
 public final class NiceThreadPool {
     private static final Logger LOGGER = LoggerFactory.getLogger(NiceThreadPool.class);

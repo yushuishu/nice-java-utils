@@ -12,7 +12,8 @@ import java.util.logging.Logger;
  * @Motto ：ABC(Always Be Coding)
  * <p></p>
  * @Description ：字符串操作
- * 参考：com.google.guava
+ * <p></p>
+ * 参考：
  */
 public class NiceString {
 

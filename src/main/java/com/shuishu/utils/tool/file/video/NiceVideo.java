@@ -10,6 +10,7 @@ package com.shuishu.utils.tool.file.video;
  * <p></p>
  * @Description ：视频文件操作
  * <p></p>
+ * 参考：
  */
 public class NiceVideo {
 
