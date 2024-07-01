@@ -1,7 +1,8 @@
 package com.shuishu.utils.tool.thread.lock.aspect;
 
 
-import com.shuishu.utils.tool.thread.lock.annotation.NiceServiceLock;
+import com.shuishu.utils.tool.cache.redis.NiceRedis;
+import com.shuishu.utils.tool.thread.lock.annotation.NiceServiceDistributedLock;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -14,13 +15,10 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @Author ：谁书-ss
- * @Date   ： 2024/6/18 9:54
+ * @Date   ： 2024/6/27 9:54
  * @IDE    ：IntelliJ IDEA
  * @Motto  ：ABC(Always Be Coding)
  * <p></p>
@@ -29,51 +27,45 @@ import java.util.concurrent.locks.ReentrantLock;
  * 参考：
  *
  * 使用：
- * 要修改的代码：@Pointcut("@annotation(com.shuishu.utils.tool.thread.lock.NiceServiceLock)") ，换成项目实际路径
+ * 要修改的代码：@Pointcut("@annotation(com.shuishu.utils.tool.thread.lock.NiceServiceDistributedLock)") ，换成项目实际路径
  */
-// 越小越是最先执行，但更重要的是最先执行的最后结束
+//order越小越是最先执行，但更重要的是最先执行的最后结束
 @Order(1)
 @Component
 @Scope
 @Aspect
-public class LockAspect {
-    private static final Logger logger = LoggerFactory.getLogger(LockAspect.class);
+public class DistributedLockAspect {
 
-    /**
-     * 互斥锁 参数默认false，不公平锁
-     */
-    private static final Lock LOCK = new ReentrantLock(true);
+    private static final Logger logger = LoggerFactory.getLogger(DistributedLockAspect.class);
+
+
 
     /**
      * Service层切点，用于记录错误日志
      */
-    @Pointcut("@annotation(com.shuishu.utils.tool.thread.lock.annotation.NiceServiceLock)")
-    public void lockAspect() {
+    @Pointcut("@annotation(com.shuishu.utils.tool.thread.lock.annotation.NiceServiceDistributedLock)")
+    public void distributedLockAspect() {
     }
 
-    @Around("lockAspect()")
+    @Around("distributedLockAspect()")
     public  Object around(ProceedingJoinPoint joinPoint) {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
-        NiceServiceLock niceServiceLock = method.getAnnotation(NiceServiceLock.class);
-        int tryLock = niceServiceLock.tryLock();
-        tryLock = Math.max(tryLock, 1);
-        boolean lockAcquired = false;
-        try {
-            lockAcquired = LOCK.tryLock(tryLock, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        NiceServiceDistributedLock niceServiceDistributedLock = method.getAnnotation(NiceServiceDistributedLock.class);
+        String lockKey = niceServiceDistributedLock.lockKey();
+        String lockValue = niceServiceDistributedLock.lockValue();
+        int tryLock = niceServiceDistributedLock.tryLock();
+        tryLock = Math.max(tryLock, 10);
+        boolean lockAcquired = NiceRedis.lock(lockKey, lockValue, 20, tryLock);
         Object obj = null;
         if (lockAcquired) {
             try {
                 obj = joinPoint.proceed();
             } catch (Throwable e) {
                 logger.error(e.getMessage(), e);
-                e.printStackTrace();
                 throw new RuntimeException(e.getMessage());
             } finally{
-                LOCK.unlock();
+                NiceRedis.unLock(lockKey, lockValue);
             }
         } else {
             throw new RuntimeException("系统繁忙，请稍后再试");

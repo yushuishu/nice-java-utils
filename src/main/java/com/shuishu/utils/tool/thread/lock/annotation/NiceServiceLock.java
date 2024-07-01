@@ -1,8 +1,7 @@
-package com.shuishu.utils.tool.thread.lock;
+package com.shuishu.utils.tool.thread.lock.annotation;
 
 
 import java.lang.annotation.*;
-
 
 /**
  * @Author ：谁书-ss
@@ -18,5 +17,18 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface NiceServiceLock {
+    /**
+     * 业务加锁描述
+     *
+     * @return -
+     */
     String description() default "";
+
+    /**
+     * 并发下，获取锁的等待时间，单位：秒。最少1秒，默认1秒
+     *
+     * @return -
+     */
+    int tryLock() default 1;
+
 }

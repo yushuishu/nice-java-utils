@@ -22,7 +22,7 @@ import java.util.concurrent.*;
  * <a href="https://github.com/google/guava">...</a>
  */
 public final class NiceThreadPool {
-    private static final Logger LOGGER = LoggerFactory.getLogger(NiceThreadPool.class);
+    private static final Logger logger = LoggerFactory.getLogger(NiceThreadPool.class);
     private static ThreadPoolExecutor threadPool = null;
     /**
      * 线程名称
@@ -82,7 +82,7 @@ public final class NiceThreadPool {
                     new ThreadPoolExecutor.AbortPolicy() {
                         @Override
                         public void rejectedExecution(Runnable r, ThreadPoolExecutor e) {
-                            LOGGER.warn("线程爆炸了，当前运行线程总数：{}，活动线程数：{}。等待队列已满，等待运行任务数：{}",
+                            logger.warn("线程爆炸了，当前运行线程总数：{}，活动线程数：{}。等待队列已满，等待运行任务数：{}",
                                     e.getPoolSize(),
                                     e.getActiveCount(),
                                     e.getQueue().size());

@@ -1,9 +1,11 @@
 package com.shuishu.utils.tool.string;
 
 
-import javax.annotation.CheckForNull;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Author ：谁书-ss
@@ -17,59 +19,29 @@ import java.util.logging.Logger;
  */
 public class NiceString {
 
-    public static String lenientFormat(@CheckForNull String template, @CheckForNull Object... args) {
-        template = String.valueOf(template);
-        if (args == null) {
-            args = new Object[]{"(Object[])null"};
-        } else {
-            for(int i = 0; i < args.length; ++i) {
-                args[i] = lenientToString(args[i]);
-            }
+    /**
+     * 指定分割符，解析字符串，返回字符串集合
+     *
+     * @param srcStr 要分割的字符串
+     * @param s_delimiter 分隔符：cn.hutool.core.text.StrUtil
+     * @return
+     */
+    public static List<String> parseStringByDelimiter(String srcStr, String s_delimiter) {
+        if (s_delimiter != null && !s_delimiter.isEmpty()) {
+            return Arrays.stream(srcStr.split(s_delimiter)).distinct().collect(Collectors.toList());
         }
-
-        StringBuilder builder = new StringBuilder(template.length() + 16 * args.length);
-        int templateStart = 0;
-
-        int i;
-        int placeholderStart;
-        for(i = 0; i < args.length; templateStart = placeholderStart + 2) {
-            placeholderStart = template.indexOf("%s", templateStart);
-            if (placeholderStart == -1) {
-                break;
-            }
-
-            builder.append(template, templateStart, placeholderStart);
-            builder.append(args[i++]);
-        }
-
-        builder.append(template, templateStart, template.length());
-        if (i < args.length) {
-            builder.append(" [");
-            builder.append(args[i++]);
-
-            while(i < args.length) {
-                builder.append(", ");
-                builder.append(args[i++]);
-            }
-
-            builder.append(']');
-        }
-
-        return builder.toString();
+        return new ArrayList<>();
     }
 
-    private static String lenientToString(@CheckForNull Object o) {
-        if (o == null) {
-            return "null";
-        } else {
-            try {
-                return o.toString();
-            } catch (Exception var3) {
-                String objectToString = o.getClass().getName() + '@' + Integer.toHexString(System.identityHashCode(o));
-                Logger.getLogger("com.google.common.base.Strings").log(Level.WARNING, "Exception during lenientFormat for " + objectToString, var3);
-                return "<" + objectToString + " threw " + var3.getClass().getName() + ">";
-            }
-        }
+    /**
+     * 指定分割符，解析字符串，返回字符串集合
+     *
+     * @param srcStr 要分割的字符串
+     * @param c_delimiter 分隔符：cn.hutool.core.text.StrUtil
+     * @return -
+     */
+    public static List<String> parseStringByDelimiter(String srcStr, char c_delimiter) {
+        return Arrays.stream(srcStr.split(String.valueOf(c_delimiter))).distinct().collect(Collectors.toList());
     }
 
 }
