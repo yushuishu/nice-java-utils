@@ -1,6 +1,8 @@
 package com.shuishu.utils.tool.entity;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -8,6 +10,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -26,8 +29,10 @@ import java.util.stream.Collectors;
  */
 public class NiceEntity {
 
+    private static final Logger logger = LoggerFactory.getLogger(NiceEntity.class);
+
     /**
-     * 获取到对象中值为 null的属性名称
+     * 获取到对象中值为 null的字段名
      *
      * @param source              源对象
      * @param extraFieldNameArray 额外的字段名
@@ -40,7 +45,7 @@ public class NiceEntity {
         Set<String> emptyNames = new HashSet<>();
         for (java.beans.PropertyDescriptor pd : pds) {
             Object srcValue = src.getPropertyValue(pd.getName());
-            if (StringUtils.isEmpty(srcValue)) {
+            if (srcValue == null || !StringUtils.hasText(srcValue.toString())) {
                 emptyNames.add(pd.getName());
             }
         }
@@ -82,10 +87,29 @@ public class NiceEntity {
                 }
             }
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
         }
         return map;
     }
+
+    public static <T> T convertMapToEntity(Map<String, Object> map, Class<T> entityClass) {
+        try {
+            T entity = entityClass.getDeclaredConstructor().newInstance();
+            Set<Map.Entry<String, Object>> entries = map.entrySet();
+            for (Map.Entry<String, Object> entry : entries) {
+                String key = entry.getKey();
+                Object value = entry.getValue();
+                Field field = entityClass.getDeclaredField(key);
+                field.setAccessible(true);
+                field.set(entity, value);
+            }
+            return entity;
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | NoSuchFieldException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+
 
     /**
      * 比较公共的实体去重操作，实体对象无需重写 equals 和 hashcode 方法 就能实现去重操作
