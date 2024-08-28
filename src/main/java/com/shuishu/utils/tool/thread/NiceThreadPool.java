@@ -5,6 +5,8 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.*;
 
 
@@ -42,30 +44,6 @@ public final class NiceThreadPool {
     }
 
 
-    /**
-     * 无返回值直接执行
-     *
-     * 使用方法：NiceThreadPool.execute(() -> {});
-     *
-     * @param runnable 需要运行的任务
-     */
-    public static void execute(Runnable runnable) {
-        getThreadPool().execute(runnable);
-    }
-
-    /**
-     * 有返回值执行
-     * 主线程中使用 Future.get()获取返回值时，会阻塞主线程，直到任务执行完毕
-     *
-     * 使用方法：1、调用：Future<String> future = NiceThreadPool.submit(() -> {return "返回值"});
-     *         2、获取值：String val = future.get(3, TimeUnit.SECONDS) //获取值的 超时时间
-     *
-     * @param callable 需要运行的任务
-     */
-    public static <T> Future<T> submit(Callable<T> callable) {
-        return getThreadPool().submit(callable);
-    }
-
     private static synchronized ThreadPoolExecutor getThreadPool() {
         if (threadPool == null) {
             // 获取处理器数量
@@ -92,6 +70,96 @@ public final class NiceThreadPool {
         }
 
         return threadPool;
+    }
+
+    /**
+     * 关闭线程池
+     */
+    public static void shutdown() {
+        if (threadPool != null) {
+            threadPool.shutdown();
+            try {
+                if (!threadPool.awaitTermination(60, TimeUnit.SECONDS)) {
+                    threadPool.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                threadPool.shutdownNow();
+            }
+        }
+    }
+
+    /**
+     * 无返回值直接执行
+     *
+     * 使用方法：NiceThreadPool.execute(() -> {});
+     *
+     * @param runnable 需要运行的任务
+     */
+    public static void execute(Runnable runnable) {
+        getThreadPool().execute(runnable);
+    }
+
+    /**
+     * 无返回值直接执行
+     *
+     * @param runnable 需要运行的任务
+     * @param threadNumber 执行同一个任务，使用的线程数
+     */
+    public static void execute(Runnable runnable, int threadNumber) {
+        List<Callable<Void>> tasks = new ArrayList<>();
+        // 将相同的任务添加到任务列表中
+        for (int i = 0; i < threadNumber; i++) {
+            tasks.add(() -> {
+                runnable.run();
+                return null; // Callable 必须返回一个值，因此返回 null
+            });
+        }
+        try {
+            // 提交所有任务并等待执行完毕
+            getThreadPool().invokeAll(tasks);
+        } catch (InterruptedException e) {
+            // 重新设置中断状态
+            Thread.currentThread().interrupt();
+            logger.error("执行任务时被中断", e);
+        }
+    }
+
+    /**
+     * 有返回值执行
+     * 主线程中使用 Future.get()获取返回值时，会阻塞主线程，直到任务执行完毕
+     *
+     * 使用方法：1、调用：Future<String> future = NiceThreadPool.submit(() -> {return "返回值"});
+     *         2、获取值：String val = future.get(3, TimeUnit.SECONDS) //获取值的 超时时间
+     *
+     * @param callable 需要运行的任务
+     */
+    public static <T> Future<T> submit(Callable<T> callable) {
+        return getThreadPool().submit(callable);
+    }
+
+    /**
+     * 有返回值执行
+     * 主线程中使用 Future.get()获取返回值时，会阻塞主线程，直到任务执行完毕
+     *
+     * @param callable 需要运行的任务
+     * @param threadNumber 执行同一个任务，使用的线程数
+     */
+    public static <T> List<Future<T>> submit(Callable<T> callable, int threadNumber) {
+        List<Callable<T>> tasks = new ArrayList<>();
+        // 将相同的任务添加到任务列表中
+        for (int i = 0; i < threadNumber; i++) {
+            tasks.add(callable::call);
+        }
+        List<Future<T>> futures = new ArrayList<>();
+        try {
+            // 提交所有任务并返回 Future 列表
+            futures = getThreadPool().invokeAll(tasks);
+        } catch (InterruptedException e) {
+            // 重新设置中断状态
+            Thread.currentThread().interrupt();
+            logger.error("执行任务时被中断", e);
+        }
+        return futures;
     }
 
 

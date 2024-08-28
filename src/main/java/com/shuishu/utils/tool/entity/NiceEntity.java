@@ -92,6 +92,14 @@ public class NiceEntity {
         return map;
     }
 
+    /**
+     * Map convert Entity
+     *
+     * @param map 实体对象每个字段的值，key：字段名，value：字段值
+     * @param entityClass 实体类
+     * @param <T> -
+     * @return -
+     */
     public static <T> T convertMapToEntity(Map<String, Object> map, Class<T> entityClass) {
         try {
             T entity = entityClass.getDeclaredConstructor().newInstance();

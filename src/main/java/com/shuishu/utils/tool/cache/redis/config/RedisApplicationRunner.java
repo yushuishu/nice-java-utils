@@ -1,12 +1,6 @@
 package com.shuishu.utils.tool.cache.redis.config;
 
 
-/**
- * @author wuZhenFeng
- * @date 2024/6/27 9:28
- */
-
-
 import com.shuishu.utils.tool.cache.redis.NiceRedis;
 import jakarta.annotation.Resource;
 import org.springframework.boot.ApplicationArguments;
