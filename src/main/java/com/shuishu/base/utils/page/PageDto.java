@@ -1,6 +1,7 @@
 package com.shuishu.base.utils.page;
 
 
+import cn.hutool.core.util.ReflectUtil;
 import jakarta.validation.constraints.Min;
 
 /**
@@ -111,6 +112,22 @@ public class PageDto {
         this.pageSize = pageSize;
     }
 
+    /**
+     * 检查排序字段名，是否存在Class中
+     */
+    public boolean checkSortFieldExists(Class<?> clazz) {
+        if (sortField1 != null && !sortField1.isEmpty() && ReflectUtil.getField(clazz, sortField1) == null) {
+            throw new NullPointerException("分页排序字段名【" + sortField1 + "】不存在");
+        }
+        if (sortField2 != null && !sortField2.isEmpty() && ReflectUtil.getField(clazz, sortField2) == null) {
+            throw new NullPointerException("分页排序字段名【" + sortField2 + "】不存在");
+        }
+        return true;
+    }
+
+    /**
+     * 装换 PageVo<T>类
+     */
     public <T> PageVo<T> toPageVo(Class<T> cl) {
         return new PageVo<T>(pageNumber, pageSize);
     }

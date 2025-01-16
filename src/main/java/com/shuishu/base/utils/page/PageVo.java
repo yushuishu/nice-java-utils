@@ -1,6 +1,7 @@
 package com.shuishu.base.utils.page;
 
 
+import cn.hutool.core.util.ReflectUtil;
 import jakarta.validation.constraints.Min;
 
 import java.io.Serial;
@@ -181,6 +182,8 @@ public class PageVo<T> implements Serializable {
                 '}';
     }
 
+    // ---------------------------------------------------------------------------------------------------------------------
+
     public PageVo() {
     }
 
@@ -210,8 +213,11 @@ public class PageVo<T> implements Serializable {
         this.pageSize = pageSize;
     }
 
+    // ---------------------------------------------------------------------------------------------------------------------
+
     public PageVo<T> update(List<T> dataList, Map<String, Object> extraDataMap, long totalNumber) {
         this.dataList = dataList;
+        this.extraDataMap = extraDataMap;
         // 设置总记录数
         this.totalNumber = totalNumber;
         // 设置总页数
@@ -227,6 +233,32 @@ public class PageVo<T> implements Serializable {
         this.totalPage = (totalNumber + pageSize - 1) / pageSize;
         return this;
     }
+
+    public PageVo<T> update(List<T> dataList, Map<String, Object> extraDataMap) {
+        this.dataList = dataList;
+        this.extraDataMap = extraDataMap;
+        return this;
+    }
+
+    public PageVo<T> update(List<T> dataList) {
+        this.dataList = dataList;
+        return this;
+    }
+
+    public PageVo<T> update(Map<String, Object> extraDataMap) {
+        this.extraDataMap = extraDataMap;
+        return this;
+    }
+
+    public PageVo<T> update(long totalNumber) {
+        // 设置总记录数
+        this.totalNumber = totalNumber;
+        // 设置总页数
+        this.totalPage = (totalNumber + pageSize - 1) / pageSize;
+        return this;
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------
 
     public static <T> PageVo<T> newPageVo(Class<T> cl, long pageNumber, long pageSize) {
         PageVo<T> emptyPage = new PageVo<>();
@@ -244,6 +276,7 @@ public class PageVo<T> implements Serializable {
         return new PageVo<>(pageNumber, pageSize, totalNumber, dataList);
     }
 
+    // ---------------------------------------------------------------------------------------------------------------------
 
     /**
      * 检查当前页码是否超出范围
@@ -253,5 +286,17 @@ public class PageVo<T> implements Serializable {
         return pageNumber > getTotalPage();
     }
 
+    /**
+     * 检查排序字段名，是否存在Class中
+     */
+    public boolean checkSortFieldExists(Class<?> clazz) {
+        if (sortField1 != null && !sortField1.isEmpty() && ReflectUtil.getField(clazz, sortField1) == null) {
+            throw new NullPointerException("分页排序字段名【" + sortField1 + "】不存在");
+        }
+        if (sortField2 != null && !sortField2.isEmpty() && ReflectUtil.getField(clazz, sortField2) == null) {
+            throw new NullPointerException("分页排序字段名【" + sortField2 + "】不存在");
+        }
+        return true;
+    }
 
 }
