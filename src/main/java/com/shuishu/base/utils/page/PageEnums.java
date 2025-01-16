@@ -1,13 +1,6 @@
 package com.shuishu.base.utils.page;
 
 
-/**
- * @author wuZhenFeng
- * @date 2025/1/15 16:53
- * @version ：1.0.0
- * @since ：1.0.0
- */
-
 
 /**
  * @author ：谁书-ss

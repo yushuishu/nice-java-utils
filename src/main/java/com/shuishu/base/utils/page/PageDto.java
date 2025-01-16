@@ -115,14 +115,13 @@ public class PageDto {
     /**
      * 检查排序字段名，是否存在Class中
      */
-    public boolean checkSortFieldExists(Class<?> clazz) {
+    public void checkSortFieldExists(Class<?> clazz) {
         if (sortField1 != null && !sortField1.isEmpty() && ReflectUtil.getField(clazz, sortField1) == null) {
             throw new NullPointerException("分页排序字段名【" + sortField1 + "】不存在");
         }
         if (sortField2 != null && !sortField2.isEmpty() && ReflectUtil.getField(clazz, sortField2) == null) {
             throw new NullPointerException("分页排序字段名【" + sortField2 + "】不存在");
         }
-        return true;
     }
 
     /**
