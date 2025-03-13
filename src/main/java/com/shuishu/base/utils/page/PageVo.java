@@ -43,6 +43,10 @@ public class PageVo<T> implements Serializable {
     private Long startIndex;
     // 数据分页，结束索引（不包含数据）
     private Long endIndex;
+    // 数据分页，开始行（包含数据）
+    private Long startRow;
+    // 数据分页，结束行（包含数据）
+    private Long endRow;
     // 排序规则
     private PageEnums.SortRule sortRule;
     // 排序字段1
@@ -63,6 +67,8 @@ public class PageVo<T> implements Serializable {
 
     public PageVo<T> setPageNumber(@Min(value = 1, message = "页码从1开始") long pageNumber) {
         this.pageNumber = pageNumber;
+        setStartRow();
+        setEndRow();
         return this;
     }
 
@@ -73,6 +79,8 @@ public class PageVo<T> implements Serializable {
 
     public PageVo<T> setPageSize(@Min(value = 1, message = "页大小从1开始") long pageSize) {
         this.pageSize = pageSize;
+        setStartRow();
+        setEndRow();
         return this;
     }
 
@@ -117,6 +125,28 @@ public class PageVo<T> implements Serializable {
     public PageVo<T> setEndIndex(Long endIndex) {
         this.endIndex = endIndex;
         return this;
+    }
+
+    public Long getStartRow() {
+        if (startRow == null) {
+            startRow = (pageNumber - 1) * pageSize + 1;
+        }
+        return startRow;
+    }
+
+    public void setStartRow() {
+        this.startRow = (pageNumber - 1) * pageSize + 1;
+    }
+
+    public Long getEndRow() {
+        if (endRow == null) {
+            endRow = pageNumber * pageSize;
+        }
+        return endRow;
+    }
+
+    public void setEndRow() {
+        this.endRow = pageNumber * pageSize;
     }
 
     public PageEnums.SortRule getSortRule() {

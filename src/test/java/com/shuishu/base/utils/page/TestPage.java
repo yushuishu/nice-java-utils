@@ -9,6 +9,9 @@ package com.shuishu.base.utils.page;
  */
 
 
+import cn.hutool.http.HttpResponse;
+import cn.hutool.http.HttpUtil;
+import cn.hutool.system.SystemUtil;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -49,6 +52,15 @@ public class TestPage {
         PageVo<User> pageVo = pageDto.toPageVo(User.class);
         pageVo.update(list, 10);
         System.out.println(pageVo);
+
+        System.out.println(SystemUtil.getOsInfo().getName());
+    }
+
+    @Test
+    public void test_03() {
+        HttpResponse httpResponse = HttpUtil.createGet("https://pic1cache.yuschool.cn/omd/880e3cc22494e5ffaaf6388a6f161296").execute();
+        System.out.println(httpResponse.header("Content-Type"));
+
     }
 
 }
